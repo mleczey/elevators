@@ -6,6 +6,7 @@ import com.tingco.codechallenge.elevator.entity.MovableElevator;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -22,5 +23,10 @@ class ElevatorStore implements ElevatorAccess {
     @Override
     public Collection<MovableElevator> findElevators() {
         return elevators.values();
+    }
+
+    @Override
+    public Optional<MovableElevator> findById(ElevatorId id) {
+        return Optional.ofNullable(elevators.get(id));
     }
 }

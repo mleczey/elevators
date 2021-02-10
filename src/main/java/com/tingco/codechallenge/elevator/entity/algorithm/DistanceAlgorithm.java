@@ -1,4 +1,4 @@
-package com.tingco.codechallenge.elevator.control.distance;
+package com.tingco.codechallenge.elevator.entity.algorithm;
 
 public interface DistanceAlgorithm {
 

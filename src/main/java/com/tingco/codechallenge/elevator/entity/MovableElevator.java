@@ -6,5 +6,7 @@ public interface MovableElevator extends Elevator, Runnable {
 
     void tick();
 
+    void reset();
+
     int calculateDistance(final int requestedFloor);
 }

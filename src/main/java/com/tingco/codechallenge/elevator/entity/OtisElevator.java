@@ -1,9 +1,12 @@
 package com.tingco.codechallenge.elevator.entity;
 
+import com.tingco.codechallenge.elevator.entity.algorithm.AlgorithmFactory;
+import com.tingco.codechallenge.elevator.entity.exception.FloorNotInRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
@@ -26,7 +29,6 @@ public class OtisElevator implements MovableElevator {
 
     private final NavigableSet<Integer> requests;
 
-    // pass factory that will create algorithm for tick and distance calculation
     public OtisElevator(final ElevatorId id, final int numberOfFloors, final Duration timeBetweenFloors) {
         this.id = id;
         minFloor = 0;
@@ -69,7 +71,7 @@ public class OtisElevator implements MovableElevator {
 
     private void guardFloor(final int floor) {
         if (minFloor > floor || floor > maxFloor) {
-            throw new IllegalArgumentException("Requested floor " + floor + " not in range " + minFloor + "-" + maxFloor + ".");
+            throw new FloorNotInRange(floor, minFloor, maxFloor);
         }
     }
 
@@ -94,72 +96,26 @@ public class OtisElevator implements MovableElevator {
 
     @Override
     public synchronized void tick() {
-        logElevatorStatus();
-        switch (direction) {
-            case NONE:
-                startMoving();
-                break;
-            case UP:
-                moveUp();
-                break;
-            case DOWN:
-                moveDown();
-                break;
-        }
+        logger.debug("Elevator {}, current floor {}, direction {}, requested floors {}", id, currentFloor, direction, requests);
+        final var nextFloorAlgorithm = AlgorithmFactory.create(minFloor, currentFloor, maxFloor, direction, Collections.unmodifiableNavigableSet(requests));
+        nextFloorAlgorithm.calculateNextMove();
+        currentFloor = nextFloorAlgorithm.getCurrentFloor();
+        direction = nextFloorAlgorithm.getDirection();
+        requests.clear();
+        requests.addAll(nextFloorAlgorithm.getRequests());
         logElevatorStatus();
     }
 
-    private void startMoving() {
-        if (!requests.isEmpty()) {
-            direction = Direction.UP;
-        }
+    @Override
+    public synchronized void reset() {
+        this.requests.clear();
     }
 
-    private void moveUp() {
-        currentFloor++;
-        requests.remove(currentFloor);
-
-        if (maxFloor == currentFloor) {
-            direction = Direction.DOWN;
-            goDownToMinFloorWhenAllServed();
-        }
-    }
-
-    private void goDownToMinFloorWhenAllServed() {
-        if (requests.isEmpty()) {
-            requests.add(minFloor);
-        }
-    }
-
-    private void moveDown() {
-        currentFloor--;
-        requests.remove(currentFloor);
-
-        if (minFloor == currentFloor) {
-            direction = Direction.UP;
-            holdStillWhenAllServed();
-        }
-    }
-
-    private void holdStillWhenAllServed() {
-        if (requests.isEmpty()) {
-            direction = Direction.NONE;
-        }
-    }
-
-    // move to seperate class RankAlgorithm
     @Override
     public synchronized int calculateDistance(final int requestedFloor) {
         guardFloor(requestedFloor);
-
-        final var delta = currentFloor - requestedFloor;
-        var result = Math.abs(delta);
-        if (delta > 0 && Direction.UP == direction) {
-            result = (requests.last() - currentFloor) + (requests.last() - requestedFloor);
-        } else if (delta < 0 && Direction.DOWN == direction) {
-            result = (currentFloor + requests.first()) + (requestedFloor - requests.first());
-        }
-        return result;
+        return AlgorithmFactory.create(this.minFloor, this.currentFloor, this.maxFloor, this.direction)
+                .calculateDistance(requestedFloor);
     }
 
     @Override

@@ -4,20 +4,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class OtisElevatorTest {
 
@@ -38,20 +32,6 @@ class OtisElevatorTest {
 
         // then
         assertThat(actual.getId()).isEqualTo(id.value());
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {MIN_FLOOR, MAX_FLOOR - 1, MAX_FLOOR})
-    void shouldMoveElevatorToRequestedFloor(final int requestedFloor) {
-        // given
-        final var elevator = elevator();
-
-        // when
-        elevator.moveElevator(requestedFloor);
-        elevator.tick();
-
-        // then
-        assertThat(elevator.getAddressedFloor()).isEqualTo(requestedFloor);
     }
 
     @Test
@@ -79,51 +59,6 @@ class OtisElevatorTest {
         // then
         assertThat(elevator.getDirection()).isEqualTo(Elevator.Direction.UP);
         assertThat(elevator.isBusy()).isTrue();
-    }
-
-    @ParameterizedTest
-    @MethodSource("floorsFromMinFloorProvider")
-    void shouldCalculateDistanceFromMinFloor(final int requestedFloor, final int expected) {
-        // given
-        final var elevator = elevator();
-
-        // when
-        final var actual = elevator.calculateDistance(requestedFloor);
-
-        // then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    static Stream<Arguments> floorsFromMinFloorProvider() {
-        return Stream.of(
-                arguments(MIN_FLOOR, MIN_FLOOR),
-                arguments(MAX_FLOOR - 1, MAX_FLOOR - 1),
-                arguments(MAX_FLOOR, MAX_FLOOR)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("floorsFromVariousFloorProvider")
-    void shouldCalculateDistanceFromGivenFloor(final int numberOfFloors, final int numberOfTraveledFloors, final int requestedFloor, final int expected) {
-        // given
-        final var elevator = elevator(numberOfFloors, numberOfTraveledFloors);
-
-        // when
-        final var actual = elevator.calculateDistance(requestedFloor);
-
-        // then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    static Stream<Arguments> floorsFromVariousFloorProvider() {
-        final var numberOfFloors = 10;
-
-        return Stream.of(
-                arguments(numberOfFloors, 5, 8, 3),
-                arguments(numberOfFloors, 5, 2, 11),
-                arguments(numberOfFloors, 13, 8, 13),
-                arguments(numberOfFloors, 13, 2, 3)
-        );
     }
 
     @Nested

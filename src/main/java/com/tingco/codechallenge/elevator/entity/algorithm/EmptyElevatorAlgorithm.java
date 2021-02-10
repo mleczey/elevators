@@ -1,14 +1,14 @@
-package com.tingco.codechallenge.elevator.control.distance;
+package com.tingco.codechallenge.elevator.entity.algorithm;
 
 import com.tingco.codechallenge.elevator.entity.Elevator;
 
-public class EmptyElevatorAlgorithm implements DistanceAlgorithm {
+class EmptyElevatorAlgorithm implements DistanceAlgorithm {
 
     private final DistanceAlgorithm distanceAlgorithm;
 
     private final Elevator.Direction direction;
 
-    public EmptyElevatorAlgorithm(DistanceAlgorithm distanceAlgorithm, Elevator.Direction direction) {
+    EmptyElevatorAlgorithm(DistanceAlgorithm distanceAlgorithm, Elevator.Direction direction) {
         this.distanceAlgorithm = distanceAlgorithm;
         this.direction = direction;
     }

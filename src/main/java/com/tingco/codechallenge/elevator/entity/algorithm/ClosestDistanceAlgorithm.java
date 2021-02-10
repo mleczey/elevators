@@ -1,8 +1,8 @@
-package com.tingco.codechallenge.elevator.control.distance;
+package com.tingco.codechallenge.elevator.entity.algorithm;
 
 import com.tingco.codechallenge.elevator.entity.Elevator;
 
-public class ClosestDistanceAlgorithm implements DistanceAlgorithm {
+class ClosestDistanceAlgorithm implements DistanceAlgorithm {
 
     private final int firstFloor;
 
@@ -12,7 +12,7 @@ public class ClosestDistanceAlgorithm implements DistanceAlgorithm {
 
     private final Elevator.Direction direction;
 
-    public ClosestDistanceAlgorithm(int firstFloor, int currentFloor, int lastFloor, Elevator.Direction direction) {
+    ClosestDistanceAlgorithm(int firstFloor, int currentFloor, int lastFloor, Elevator.Direction direction) {
         this.firstFloor = firstFloor;
         this.currentFloor = currentFloor;
         this.lastFloor = lastFloor;

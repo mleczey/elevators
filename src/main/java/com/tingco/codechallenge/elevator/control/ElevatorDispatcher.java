@@ -1,6 +1,8 @@
 package com.tingco.codechallenge.elevator.control;
 
 import com.tingco.codechallenge.elevator.entity.Elevator;
+import com.tingco.codechallenge.elevator.entity.ElevatorId;
+import com.tingco.codechallenge.elevator.entity.MovableElevator;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -35,5 +37,7 @@ public class ElevatorDispatcher implements ElevatorController {
 
     @Override
     public void releaseElevator(Elevator elevator) {
+        elevatorAccess.findById(ElevatorId.valueOf(elevator.getId()))
+                .ifPresent(MovableElevator::reset);
     }
 }
