@@ -60,9 +60,9 @@ class AlwaysMinFloorAlgorithm implements NextFloorAlgorithm {
         if (!requests.isEmpty()) {
             if (requests.first().equals(this.minFloor)) {
                 requests.remove(currentFloor);
+            } else {
+                direction = UP;
             }
-
-            direction = UP;
         }
     }
 

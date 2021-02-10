@@ -12,7 +12,7 @@ import java.util.List;
  * This is singleton on purpose - there should be only one elevator controller.
  */
 @Service
-public class ElevatorDispatcher implements ElevatorController {
+class ElevatorDispatcher implements ElevatorController {
 
     private final ElevatorAccess elevatorAccess;
 

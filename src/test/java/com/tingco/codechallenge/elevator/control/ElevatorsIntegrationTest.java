@@ -1,7 +1,6 @@
-package com.tingco.codechallenge.elevator;
+package com.tingco.codechallenge.elevator.control;
 
 import com.tingco.codechallenge.elevator.boundary.ElevatorConfiguration;
-import com.tingco.codechallenge.elevator.control.ElevatorDispatcher;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
