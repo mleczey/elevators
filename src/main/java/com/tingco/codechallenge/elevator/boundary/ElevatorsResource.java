@@ -53,6 +53,19 @@ public final class ElevatorsResource {
         return ResponseEntity.ok().body(ElevatorSnapshot.from(elevator));
     }
 
+    @PostMapping("{id}/requests/{floor}")
+    public ResponseEntity<ElevatorSnapshot> requestFloor(@PathVariable("id") final int id, @PathVariable("floor") final int floor) {
+        final var elevator = elevatorController.getElevators().stream()
+                .filter(e -> e.getId() == id)
+                .findFirst();
+
+        elevator.ifPresent(e -> e.moveElevator(floor));
+
+        return elevator.map(ElevatorSnapshot::from)
+                .map(snapshot -> ResponseEntity.ok().body(snapshot))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("{id}/requests")
     public ResponseEntity<ElevatorSnapshot> removeRequestsForElevator(@PathVariable("id") final int id) {
         final var elevator = elevatorController.getElevators().stream()
